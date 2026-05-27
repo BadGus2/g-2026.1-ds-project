@@ -7,7 +7,7 @@ int abs(int value){
 }
 
 
-int hash_this_shii(char* name, int TableSize){
+int HashThisShii(char* name, int TableSize){
     int hash = 5381;
     for(int i = 0; name[i] != '\0'; i++){
         hash = ((hash << 5) + hash) + (int)name[i];
@@ -16,7 +16,7 @@ int hash_this_shii(char* name, int TableSize){
 }
 
 
-void start(char* hashFile, int TableSize, char* dataFile){
+void start(char* hashFile, int TableSize, char* dataFile, char*subtitleFile){
     FILE* fp = fopen(hashFile, "wb");
     if(!fp) exit(1);
 
@@ -31,6 +31,11 @@ void start(char* hashFile, int TableSize, char* dataFile){
     if(!fp) exit(1);
     printf("Arquivo de dados inicializado com sucesso!\n");
     fclose(fp);
+
+    fp = fopen(subtitleFile, "wb");
+    if(!fp) exit(1);
+    printf("Arquivo de subtitulo inicializado com sucesso!\n");
+    fclose(fp);
 }
 
 
@@ -39,7 +44,7 @@ Node* searchByName(char* hashFile, int TableSize, char* dataFile, char* name){
     if(!fp) exit(1);
 
     int position;
-    position = hash_this_shii(name, TableSize) * sizeof(int);
+    position = HashThisShii(name, TableSize) * sizeof(int);
     fseek(fp, position, SEEK_SET);
     fread(&position, sizeof(int), 1, fp);
     fclose(fp);
@@ -63,4 +68,93 @@ Node* searchByName(char* hashFile, int TableSize, char* dataFile, char* name){
     }
     fclose(fp);
     return NULL;
+}
+
+
+Node* nodeAloc(char* type, char* name, int year){
+    Node* newNode = (Node*) malloc(sizeof(Node));
+    strcpy(newNode->type, type);
+    strcpy(newNode->name, name);
+    newNode->year = year;
+    return newNode;
+}
+
+void insert(char* hashFile, int TableSize, char* dataFile, char* type, char* name, int year, char* subtitle){
+    FILE* fHash = fopen(hashFile, "rb+");
+    if(!fHash) exit(1);
+    
+    FILE* fData = fopen(dataFile, "rb+");
+    if(!fData) exit(1);
+
+    int position = HashThisShii(name, TableSize) * sizeof(int);
+    int posBefore = position;
+
+    fseek(fHash, position, SEEK_SET);
+    fread(&position, sizeof(int), 1, fHash);
+    
+    if (position == -1){
+        fseek(fHash, posBefore, SEEK_SET);
+        Node* nodeToInsert = nodeAloc(type, name, year);
+        nodeToInsert->isValid = 1;
+        nodeToInsert->next = -1;
+        fseek(fData, 0, SEEK_END);
+        position = ftell(fData);
+        fwrite(nodeToInsert, sizeof(Node), 1, fData);
+        free(nodeToInsert);
+
+        fwrite(&position, sizeof(int), 1, fHash);
+        fclose(fHash);
+        fclose(fData);
+        return;
+    }
+    
+    Node aux;
+    posBefore = position;
+
+    while(position != -1){
+        fseek(fData, position, SEEK_SET);
+        fread(&aux, sizeof(Node), 1, fData);
+        
+        if((strcmp(aux.name, name) == 0) && (aux.isValid)){
+            printf("%s already into the database!", name);
+            fclose(fHash);
+            fclose(fData);
+            return;
+        }
+
+        if(!(aux.isValid)){
+            Node* nodeToInsert = nodeAloc(type, name, year);
+            nodeToInsert->isValid = 1;
+            nodeToInsert->next = aux.next;
+            
+            fseek(fData, posBefore, SEEK_SET);
+            fwrite(nodeToInsert, sizeof(Node), 1, fData);
+            
+            free(nodeToInsert);
+            fclose(fHash);
+            fclose(fData);
+            return;
+        }
+        posBefore = position;
+        position = aux.next;
+    }
+
+    fseek(fData, 0, SEEK_END);
+    position = ftell(fData);
+    Node* nodeToInsert = nodeAloc(type, name, year);
+    nodeToInsert->isValid = 1;
+    nodeToInsert->next = -1;
+    fwrite(nodeToInsert, sizeof(Node), 1, fData);
+    free(nodeToInsert);
+
+    Node* correctAddress = nodeAloc(aux.type, aux.name, aux.year);
+    correctAddress->isValid = aux.isValid;
+    correctAddress->next = position;
+    fseek(fData, posBefore, SEEK_SET);
+    fwrite(correctAddress, sizeof(Node), 1, fData);
+    free(correctAddress);
+
+    fclose(fHash);
+    fclose(fData);
+    return;
 }
