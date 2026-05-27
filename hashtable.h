@@ -4,26 +4,29 @@
 
 
 typedef struct node{
-    char* type; // movie or person
-    char* name; // person's or movie's name
+    char type[10]; // movie or person
+    char name[50]; // person's or movie's name
     int year; // year element was born
     int next; // next element's address
-    int isValid; // 0 -> DEAD     1 -> ALIVE
+    int isValid; // 0->DEAD  ||   1->ALIVE
+    int subtitleOffset; // Points to separate subtitle storage (-1 if none)
 }Node;
 
-//FEITO!!!!!!!!!!!!!!!!!!!!!! 4
+//FEITO!!!!!!!!!!!!!!!!!!!!!! 5
 int abs(int value);
 
-int hash_this_shii(char* name, int TableSize);
+int HashThisShii(char* name, int TableSize);
 
-void start(char* hashFile, int TableSize, char* dataFile);
+void start(char* hashFile, int TableSize, char* dataFile, char* subtitleFile);
 
 Node* searchByName(char* hashFile, int TableSize, char* dataFile, char* name);
+// Need to implement subtitle check for movies
+
+void insertFull(char* hashFile, int TableSize, char* dataFile, char* type, char* name, int year, char* subtitle);
+// Need to implement subtitle check for movies
 
 
-//FALTA FAZER!!!!!!!!!!!!!!!!!! 4
-void insert(char* hashFile, char* dataFile, char* type, char* name, int year);
-
+//FALTA FAZER!!!!!!!!!!!!!!!!!! 3
 Node* searchByYear(char* hashFile, char* dataFile, int year);
 
 Node* searchByYandT(char* hashFile, char* dataFile, char* type, int year);
