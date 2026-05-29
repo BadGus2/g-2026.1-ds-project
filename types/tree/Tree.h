@@ -6,12 +6,13 @@
 #define MAX_KEY_SIZE 160
 
 typedef struct {
-    int t; // Maximum number of keys
+
     int nKeys; // Number of keys
     char keys[MAX_KEYS][MAX_KEY_SIZE]; // Array of keys (names of the movies or people) '\0' if empty
-    int sons[MAX_KEYS + 1]; // Array of sons (positions in the data file of the first node of each son) -1 if leaf
+    int sons[MAX_KEYS + 1]; // Array of sons (positions in index.bin of the first node of each son) -1 if leaf
     int isValid; // 1 if the node is valid, 0 otherwise 
-    
+    int leaf_id; // Id to find leaf in output directory. Ex: leaf_0, leaf_1, etc.
+
 }TreeNode;
 
 void startTree(char* indexFile); //Starts the B+ tree with an empty root node.

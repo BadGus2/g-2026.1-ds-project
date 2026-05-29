@@ -15,22 +15,23 @@ int compareName(char* name1, char* name2){
     return strcmp(correctName(name1), correctName(name2));
 }
 
-void startTree(char* indexFile){
+void startTree(char* indexFile, int t){
     FILE* indexFp = fopen(indexFile, "wb");
     if(!indexFp){
         printf("Error opening index file in startTree() function\n");
         exit(1);
     }
+    int balanceFactor = t;
     long rootPosition = -1;
     fwrite(&rootPosition, sizeof(long), 1, indexFp);
+    fwrite(&balanceFactor, sizeof(int), 1, indexFp);
     fclose(indexFp);
-    printf("B+ tree started with an empty root node\n");
+    printf("B+ tree started with an empty root node!\nBalance factor %d\n", balanceFactor);
 }
 
 
 TreeNode* createNode(int t){
     TreeNode* node = (TreeNode*) malloc(sizeof(TreeNode));
-    node->t = t;
     node->nKeys = 0;
     node->isValid = 1;
     for(int i = 0; i < MAX_KEYS; i++){
