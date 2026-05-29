@@ -16,7 +16,7 @@ int HashThisShii(char* name, int TableSize){
 }
 
 
-void start(char* hashFile, int TableSize, char* dataFile, char*subtitleFile){
+void start(char* hashFile, int TableSize, char* indexFile, char*subtitleFile){
     FILE* fp = fopen(hashFile, "wb");
     if(!fp) exit(1);
 
@@ -27,7 +27,7 @@ void start(char* hashFile, int TableSize, char* dataFile, char*subtitleFile){
     printf("Arquivo de hash inicializado com sucesso!\n");
     fclose(fp);
 
-    fp = fopen(dataFile, "wb");
+    fp = fopen(indexFile, "wb");
     if(!fp) exit(1);
     printf("Arquivo de dados inicializado com sucesso!\n");
     fclose(fp);
@@ -39,7 +39,7 @@ void start(char* hashFile, int TableSize, char* dataFile, char*subtitleFile){
 }
 
 
-Node* searchByName(char* hashFile, int TableSize, char* dataFile, char* name){
+Node* searchByName(char* hashFile, int TableSize, char* indexFile, char* name){
     FILE* fp = fopen(hashFile, "rb");
     if(!fp) exit(1);
 
@@ -49,7 +49,7 @@ Node* searchByName(char* hashFile, int TableSize, char* dataFile, char* name){
     fread(&position, sizeof(int), 1, fp);
     fclose(fp);
 
-    fp = fopen(dataFile, "rb");
+    fp = fopen(indexFile, "rb");
     if(!fp) exit(1);
 
     Node aux;
@@ -60,7 +60,7 @@ Node* searchByName(char* hashFile, int TableSize, char* dataFile, char* name){
 
         if((strcmp(aux.name, name) == 0) && aux.isValid){
             fclose(fp);
-            Node* resp ;//= nodeAloc(aux.type, aux.name, aux.year);
+            Node* resp = nodeAloc(aux.type, aux.name, aux.year);
             return resp;
         }
 
@@ -79,11 +79,15 @@ Node* nodeAloc(char* type, char* name, int year){
     return newNode;
 }
 
-void insert(char* hashFile, int TableSize, char* dataFile, char* type, char* name, int year, char* subtitle){
+void insert(char* hashFile, int TableSize, char* indexFile, char* type, char* name, int year, char* subtitle){
+    if(strcmp(type, "movie") == 0){
+         insertMovie(hashFile, TableSize, indexFile, type, name, year, subtitle);
+         return;
+    }
     FILE* fHash = fopen(hashFile, "rb+");
     if(!fHash) exit(1);
     
-    FILE* fData = fopen(dataFile, "rb+");
+    FILE* fData = fopen(indexFile, "rb+");
     if(!fData) exit(1);
 
     int position = HashThisShii(name, TableSize) * sizeof(int);

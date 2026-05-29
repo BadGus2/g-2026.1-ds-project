@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 
 typedef struct node{
@@ -17,18 +18,20 @@ int abs(int value);
 
 int HashThisShii(char* name, int TableSize);
 
-void start(char* hashFile, int TableSize, char* dataFile, char* subtitleFile);
+void start(char* hashFile, int TableSize, char* indexFile, char* subtitleFile);
 
-Node* searchByName(char* hashFile, int TableSize, char* dataFile, char* name);
+Node* searchByName(char* hashFile, int TableSize, char* indexFile, char* name);
 // Need to implement subtitle check for movies
 
-void insertFull(char* hashFile, int TableSize, char* dataFile, char* type, char* name, int year, char* subtitle);
+void insertFull(char* hashFile, int TableSize, char* indexFile, char* type, char* name, int year, char* subtitle);
 // Need to implement subtitle check for movies
 
 
 //FALTA FAZER!!!!!!!!!!!!!!!!!! 3
-Node* searchByYear(char* hashFile, char* dataFile, int year);
+Node* searchByYear(char* hashFile, char* indexFile, int year);
 
-Node* searchByYandT(char* hashFile, char* dataFile, char* type, int year);
+Node* searchByYandT(char* hashFile, char* indexFile, char* type, int year);
 
 Node* nodeAloc(char* type, char* name, int year);
+
+void insertMovie(char* hashFile, int TableSize, char* indexFile, char* type, char* name, int year, char* subtitle);
