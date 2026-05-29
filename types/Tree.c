@@ -37,7 +37,7 @@ char* searchNode(char* hashFile, int TableSize, char* indexFile, char* name){ //
     
 
     int position = HashThisShii(name, TableSize);
-    fseek(hashFp, position * sizeof(TreeNode), SEEK_SET);
+    fseek(hashFp, position * sizeof(int), SEEK_SET);
     fread(&position, sizeof(int), 1, hashFp);
     if(position == -1) {
         printf("Node not found\n");
@@ -89,7 +89,7 @@ long searchSonsNode(char* hashFile, int TableSize, char* indexFile, char* name){
     
 
     long position = HashThisShii(name, TableSize);
-    fseek(hashFp, position * sizeof(TreeNode), SEEK_SET);
+    fseek(hashFp, position * sizeof(int), SEEK_SET);
     fread(&position, sizeof(int), 1, hashFp);
     if(position == -1) {
         printf("Node not found\n");
