@@ -15,6 +15,18 @@ int compareName(char* name1, char* name2){
     return strcmp(correctName(name1), correctName(name2));
 }
 
+void startTree(char* indexFile){
+    FILE* indexFp = fopen(indexFile, "wb");
+    if(!indexFp){
+        printf("Error opening index file in startTree() function\n");
+        exit(1);
+    }
+    long rootPosition = -1;
+    fwrite(&rootPosition, sizeof(long), 1, indexFp);
+    fclose(indexFp);
+    printf("B+ tree started with an empty root node\n");
+}
+
 
 TreeNode* createNode(int t){
     TreeNode* node = (TreeNode*) malloc(sizeof(TreeNode));
@@ -28,34 +40,23 @@ TreeNode* createNode(int t){
     return node;
 }
 
-char* searchNode(char* hashFile, int TableSize, char* indexFile, char* name){ //Searches for a node in the B+ tree and returns the name of the file where the data is stored.
-    FILE* hashFp = fopen(hashFile, "rb");
-    if(!hashFp) {
-        printf("Error opening hash file ( searchNode() )\n");
-        exit(1);
-    }
-    
-
-    int position = HashThisShii(name, TableSize);
-    fseek(hashFp, position * sizeof(int), SEEK_SET);
-    fread(&position, sizeof(int), 1, hashFp);
-    if(position == -1) {
-        printf("Node not found\n");
-        fclose(hashFp);
-        return NULL;
-    }
-    fclose(hashFp);
-
-    TreeNode node;
+char* searchNode(char* indexFile, char* name, int year){ //Searches for a node in the B+ tree and returns the name of the file where the data is stored.
     FILE* indexFp = fopen(indexFile, "rb");
     if(!indexFp) {
-        printf("Error opening index file ( searchNode() )\n");
+        printf("Error opening index file in searchNode() function\n");
         exit(1);
     }
+    long rootPosition; 
+    fread(&rootPosition, sizeof(long), 1, indexFp);
+    if(rootPosition == -1) {
+        printf("Node not found (The tree is empty)\n");
+        fclose(indexFp);
+        return NULL;
+    }
 
-    fseek(indexFp, position * sizeof(TreeNode), SEEK_SET);
+    TreeNode node;
+    fseek(indexFp, rootPosition, SEEK_SET);
     fread(&node, sizeof(TreeNode), 1 , indexFp);
-
 
     while(node.sons[0] != -1) {
         int i = 0;
@@ -80,10 +81,10 @@ char* searchNode(char* hashFile, int TableSize, char* indexFile, char* name){ //
     return NULL;
 }
 
-long searchSonsNode(char* hashFile, int TableSize, char* indexFile, char* name){ //Searches for the position of the first son of the node that shoud contain the name.
+long searchSonsNode(char* indexFile, char* name){ //Searches for the position of the first son of the node that shoud contain the name.
     FILE* hashFp = fopen(hashFile, "rb");
     if(!hashFp) {
-        printf("Error opening hash file ( searchNode() )\n");
+        printf("Error opening hash file in searchSonsNode() function\n");
         exit(1);
     }
     
@@ -101,7 +102,7 @@ long searchSonsNode(char* hashFile, int TableSize, char* indexFile, char* name){
     TreeNode node;
     FILE* indexFp = fopen(indexFile, "rb");
     if(!indexFp) {
-        printf("Error opening index file ( searchNode() )\n");
+        printf("Error opening index file in searchSonsNode() function\n");
         exit(1);
     }
 

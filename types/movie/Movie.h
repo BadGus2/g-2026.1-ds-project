@@ -10,4 +10,4 @@ typedef struct {
 } Movie;
 
 
- char* getMovieFileName(char* title, int year, char* hashFile, int TableSize, char* indexFile); //Returns the name of the file where the movie is stored. If the movie is not found, returns NULL.
+ char* getMovieFileName(char* title, int year, char* indexFile); //Returns the name of the file where the movie is stored. If the movie is not found, returns NULL.
