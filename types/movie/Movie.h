@@ -1,7 +1,7 @@
 #include "Tree.h"
 
 typedef struct {
-
+    int type; // Type of the file (1 for movies)
     char title[MAX_KEY_SIZE]; // Movie title
     int year; // Launch year
     char subtitle[MAX_KEY_SIZE]; // Subtitle of the movie, if it has one
